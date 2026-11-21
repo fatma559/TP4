@@ -11,6 +11,63 @@ Matière : Architecture MicroServices, MPSRCC1, FSS
 | gateway-service | 8888 | Passerelle (Spring Cloud Gateway) |
 
 Ordre de lancement : eureka, calcul (8081 puis 8083), historique, gateway.
+calculatrice-spring-cloud/
+|-- pom.xml
+|-- README.md
+|-- eureka-service/
+|   |-- pom.xml
+|   |-- mvnw
+|   |-- mvnw.cmd
+|   |-- .mvn/
+|   |-- .gitignore
+|   |-- .gitattributes
+|   |-- HELP.md
+|   `-- src/
+|       |-- main/
+|       |   |-- java/com/exemple/eureka/
+|       |   |   `-- EurekaServiceApplication.java
+|       |   `-- resources/
+|       |       `-- application.properties
+|       `-- test/java/com/exemple/eureka/
+|           `-- EurekaServiceApplicationTests.java
+|-- calcul-service/
+|   |-- pom.xml
+|   `-- src/
+|       `-- main/
+|           |-- java/com/exemple/calcul/
+|           |   |-- CalculServiceApplication.java
+|           |   |-- controller/
+|           |   |   `-- CalculController.java
+|           |   |-- model/
+|           |   |   `-- Resultat.java
+|           |   `-- service/
+|           |       `-- Calculatrice.java
+|           `-- resources/
+|               `-- application.properties
+|-- historique-service/
+|   |-- pom.xml
+|   `-- src/
+|       `-- main/
+|           |-- java/com/exemple/historique/
+|           |   |-- HistoriqueServiceApplication.java
+|           |   |-- client/
+|           |   |   `-- CalculClient.java
+|           |   |-- controller/
+|           |   |   `-- OperationController.java
+|           |   |-- model/
+|           |   |   `-- Operation.java
+|           |   `-- service/
+|           |       `-- OperationService.java
+|           `-- resources/
+|               `-- application.properties
+`-- gateway-service/
+    |-- pom.xml
+    `-- src/
+        `-- main/
+            |-- java/com/exemple/gateway/
+            |   `-- GatewayServiceApplication.java
+            `-- resources/
+                `-- application.yml
 
 ## Réponses aux questions
 
