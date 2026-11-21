@@ -1,0 +1,80 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      server:
+        webflux:
+          x-forwarded:
+            enabled: true
+            for-enabled: true
+            host-enabled: true
+            port-enabled: true
+            proto-enabled: true
+            prefix-enabled: true
+
+          spring:
+            cloud:
+              gateway:
+                server:
+                  webflux:
+                    default-filters:
+                      - AddRequestHeader=X-Forwarded-Host, localhost:8888
+                      - AddRequestHeader=X-Forwarded-Proto, http
+          default-filters:
+            - AddRequestHeader=X-Forwarded-Host, localhost:8888
+            - AddRequestHeader=X-Forwarded-Proto, http
+          routes:
+            - id: route-calcul
+              uri: lb://CALCUL-SERVICE
+              predicates:
+                - Path=/calcul/**
+            - id: route-historique
+              uri: lb://HISTORIQUE-SERVICE
+              predicates:
+                - Path=/operations/**
+            - id: doc-calcul
+              uri: lb://CALCUL-SERVICE
+              predicates:
+                - Path=/docs/calcul
+              filters:
+                - SetPath=/v3/api-docs
+            - id: doc-historique
+              uri: lb://HISTORIQUE-SERVICE
+              predicates:
+                - Path=/docs/historique
+              filters:
+                - SetPath=/v3/api-docs
+    loadbalancer:
+      cache:
+        ttl: 5s
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    registry-fetch-interval-seconds: 5
+  instance:
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 10
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway
+
+
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: calcul-service
+        url: /docs/calcul
+      - name: historique-service
+        url: /docs/historique

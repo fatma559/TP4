@@ -1,0 +1,82 @@
+package com.exemple.calcul.controller;
+
+import com.exemple.calcul.model.Resultat;
+import com.exemple.calcul.service.Calculatrice;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/calcul")
+public class CalculController {
+
+    // Port de cette instance, lu dans application.properties
+    @Value("${server.port}")
+    private int port;
+
+    private final Calculatrice calculService;
+
+    public CalculController(Calculatrice calculService) {
+        this.calculService = calculService;
+    }
+
+    // ---- Texte brut ----
+    @GetMapping(value = "/somme", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> somme(@RequestParam("a") int a,
+                                        @RequestParam("b") int b) {
+        System.out.println("[calcul-service:" + port + "] somme " + a + "+" + b);
+        return ResponseEntity.ok(String.valueOf(calculService.somme(a, b)));
+    }
+
+    @GetMapping(value = "/soustraction", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> soustraction(@RequestParam("a") int a,
+                                               @RequestParam("b") int b) {
+        System.out.println("[calcul-service:" + port + "] soustraction " + a + "-" + b);
+        return ResponseEntity.ok(String.valueOf(calculService.soustraction(a, b)));
+    }
+
+    @GetMapping(value = "/produit", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> produit(@RequestParam("a") int a,
+                                          @RequestParam("b") int b) {
+        System.out.println("[calcul-service:" + port + "] produit " + a + "*" + b);
+        return ResponseEntity.ok(String.valueOf(calculService.produit(a, b)));
+    }
+
+    @GetMapping(value = "/division", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> division(@RequestParam("a") int a,
+                                           @RequestParam("b") int b) {
+        System.out.println("[calcul-service:" + port + "] division " + a + "/" + b);
+        if (b == 0) {
+            return ResponseEntity.badRequest()
+                    .body("Erreur : division par 0 impossible");
+        }
+        return ResponseEntity.ok(String.valueOf(calculService.division(a, b)));
+    }
+
+    // ---- @PathVariable (D.4) ----
+    @GetMapping(value = "/produit/{a}/{b}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> produitChemin(@PathVariable("a") int a,
+                                                @PathVariable("b") int b) {
+        System.out.println("[calcul-service:" + port + "] produit " + a + "*" + b);
+        return ResponseEntity.ok(String.valueOf(calculService.produit(a, b)));
+    }
+
+    // ---- JSON (E.2) ----
+    @GetMapping("/somme/detail")
+    public Resultat sommeDetail(@RequestParam("a") int a,
+                                @RequestParam("b") int b) {
+        return new Resultat("somme", a, b, calculService.somme(a, b));
+    }
+
+    // ---- Exercice E.4 ----
+    @GetMapping("/division/detail")
+    public ResponseEntity<Resultat> divisionDetail(@RequestParam("a") int a,
+                                                   @RequestParam("b") int b) {
+        if (b == 0) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(
+                new Resultat("division", a, b, calculService.division(a, b)));
+    }
+}
